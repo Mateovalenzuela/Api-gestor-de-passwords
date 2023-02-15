@@ -1,10 +1,10 @@
 from flask import Blueprint, jsonify, request
 
 # Models
-from src.models.ModelPassword import ModelPassword
+from models.ModelPassword import ModelPassword
 
 # Entities
-from src.models.entities.Password import Password
+from models.entities.Password import Password
 
 main = Blueprint('password_blueprint', __name__)
 

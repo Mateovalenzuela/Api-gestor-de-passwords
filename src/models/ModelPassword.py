@@ -1,5 +1,5 @@
-from ..database.db_postgresql import get_connection
-from src.models.entities.Password import Password
+from database.db_postgresql import get_connection
+from models.entities.Password import Password
 
 
 class ModelPassword:
@@ -11,8 +11,12 @@ class ModelPassword:
 
             with connection:
                 with connection.cursor() as cursor:
-                    query = 'SELECT id, usuario,  PGP_SYM_DECRYPT(password::bytea, \'CLAVE_AES\'), titulo, url, ' \
-                            'descripcion, fecha_creacion FROM gestor_password WHERE baja=false'
+                    clave = 'CLAVE_AES'
+                    # query = f'SELECT id, usuario,  PGP_SYM_DECRYPT(password::bytea, {clave}), titulo, url, ' \
+                    #       f'descripcion, fecha_creacion FROM gestor_password WHERE baja=false'
+
+                    query = f'SELECT id, usuario,  password, titulo, url, ' \
+                           f'descripcion, fecha_creacion FROM gestor_password WHERE baja=false'
                     cursor.execute(query)
                     resultset = cursor.fetchall()
 

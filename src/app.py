@@ -1,4 +1,5 @@
 from flask import Flask
+from flask import redirect
 from flask_cors import CORS
 
 from config import config
@@ -10,8 +11,13 @@ app = Flask(__name__)
 CORS(app, resources = {"*": {'origins': 'http://localhost:5000'}})
 
 
+@app.route('/')
+def index():
+    return redirect('/api/passwords')
+
+
 def page_not_found(error):
-    return "<h1>Not found page</h1>", 404
+    return "<h1>Error: page not found</h1>", 404
 
 
 if __name__ == '__main__':
@@ -22,4 +28,4 @@ if __name__ == '__main__':
 
     # Error handlers
     app.register_error_handler(404, page_not_found)
-    app.run()
+    app.run(port = 5000)

@@ -1,4 +1,4 @@
-from src.utils.DateFormat import DateFormat
+from utils.DateFormat import DateFormat
 
 class Password:
     def __init__(self, id, usuario, password, titulo="", url="", descripcion=""):

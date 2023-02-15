@@ -1,12 +1,11 @@
-from decouple import config
-
 
 class Config:
-    SECRET_KEY = config('SECRET_KEY')
+    FLASK_APP = "app"
+    SECRET_KEY = "P4SSWOR1*_?"
 
 
 class DevelopmentConfig(Config):
-    DEBUG = False
+    DEBUG = True
 
 
 config = {
