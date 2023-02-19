@@ -1,39 +1,29 @@
-from utils.DateFormat import DateFormat
+from werkzeug.security import gen_salt
+
 
 class Password:
-    def __init__(self, id, usuario, password, titulo="", url="", descripcion=""):
+    def __init__(self, id, password):
         self._id = id
-        self._usuario = usuario
         self._password = password
-        self._titulo = titulo
-        self._url = url
-        self._descripcion = descripcion
-        self._fecha_creacion = None
-        self._baja = False
+        self._clave = None
 
-    def to_JSON(self):
+    @classmethod
+    def generate_key(cls):
+        return str(gen_salt(36))
+
+    def to_json(self):
         return {
             'id': self.id,
-            'usuario': self.usuario,
             'password': self.password,
-            'titulo': self.titulo,
-            'url': self.url,
-            'descripcion': self.descripcion,
-            'fecha_creacion': DateFormat.convert_date(self.fecha_creacion),
-            'baja': self.baja,
         }
 
     @property
     def id(self):
         return self._id
 
-    @property
-    def usuario(self):
-        return self._usuario
-
-    @usuario.setter
-    def usuario(self, usuario):
-        self._usuario = usuario
+    @id.setter
+    def id(self, id):
+        self._id = id
 
     @property
     def password(self):
@@ -44,41 +34,9 @@ class Password:
         self._password = password
 
     @property
-    def url(self):
-        return self._url
+    def clave(self):
+        return self._clave
 
-    @url.setter
-    def url(self, url):
-        self._url = url
-
-    @property
-    def titulo(self):
-        return self._titulo
-
-    @titulo.setter
-    def titulo(self, titulo):
-        self._titulo = titulo
-
-    @property
-    def descripcion(self):
-        return self._descripcion
-
-    @descripcion.setter
-    def descripcion(self, descripcion):
-        self._descripcion = descripcion
-
-    @property
-    def fecha_creacion(self):
-        return self._fecha_creacion
-
-    @fecha_creacion.setter
-    def fecha_creacion(self, fecha_creacion):
-        self._fecha_creacion = fecha_creacion
-
-    @property
-    def baja(self):
-        return self._baja
-
-    @baja.setter
-    def baja(self, baja: bool):
-        self._baja = baja
+    @clave.setter
+    def clave(self, clave):
+        self._clave = clave
