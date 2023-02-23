@@ -2,12 +2,12 @@ from src.utils.DateFormat import DateFormat
 
 
 class PasswordCompleto:
-    def __init__(self, id, obj_password, obj_detalle_password):
+    def __init__(self, id, obj_password, obj_detalle):
         self._id = id
         self._obj_password = obj_password
-        self._obj_detalle_password = obj_detalle_password
+        self._obj_detalle = obj_detalle
         self._id_password = None
-        self._id_detalle_password = None
+        self._id_detalle = None
         self._fecha_creacion = None
         self._baja = False
 
@@ -15,7 +15,7 @@ class PasswordCompleto:
         return {
             'id': self.id,
             'obj_password': self.obj_password,
-            'obj_detalle_password': self.detalle_password,
+            'obj_detalle': self.obj_detalle,
             'fecha_creacion': DateFormat.convert_date(self.fecha_creacion),
         }
 
@@ -36,12 +36,12 @@ class PasswordCompleto:
         self._obj_password = obj_password
 
     @property
-    def obj_detalle_password(self):
-        return self._detalle_password
+    def obj_detalle(self):
+        return self._obj_detalle
 
-    @obj_detalle_password.setter
-    def obj_detalle_password(self, obj_detalle_password):
-        self._detalle_password = obj_detalle_password
+    @obj_detalle.setter
+    def obj_detalle(self, obj_detalle):
+        self._obj_detalle = obj_detalle
 
     @property
     def id_password(self):
@@ -52,12 +52,12 @@ class PasswordCompleto:
         self._id_password = id_password
 
     @property
-    def id_detalle_password(self):
-        return self._id_detalle_password
+    def id_detalle(self):
+        return self._id_detalle
 
-    @id_detalle_password.setter
-    def id_detalle_password(self, id_detalle_password):
-        self._id_detalle_password = id_detalle_password
+    @id_detalle.setter
+    def id_detalle(self, id_detalle):
+        self._id_detalle = id_detalle
 
     @property
     def fecha_creacion(self):

@@ -1,5 +1,5 @@
 
-class DetallePassword:
+class Detalle:
     def __init__(self, id, usuario, titulo="", url="", descripcion=""):
         self._id = id
         self._titulo = titulo

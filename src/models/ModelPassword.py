@@ -2,27 +2,26 @@ from src.database.db_postgresql import get_connection
 from src.models.entities.Password import Password
 
 
-
 class ModelPassword:
 
     @classmethod
-    def add_password(cls, obj_password):
+    def add_password(cls, obj_password, return_query=True):
         try:
-            connection = get_connection()
-            with connection:
-                with connection.cursor() as cursor:
-                    obj_password.clave = Password.generate_key()
+            obj_password.clave = Password.generate_key()
+            query = f'''INSERT INTO password (id, password, clave)
+                                            VALUES (%s, PGP_SYM_ENCRYPT(%s, \'{obj_password.clave}\'), %s)'''
+            tuplaDeValores = (obj_password.id, obj_password.password, obj_password.clave)
 
-                    query = f'''INSERT INTO password (id, password, clave)
-                                VALUES (%s, PGP_SYM_ENCRYPT(%s, \'{obj_password.clave}\'), %s)'''
-                    tuplaDeValores = (obj_password.id, obj_password.password, obj_password.clave)
+            if return_query:
+                transaccion = (query, tuplaDeValores)
+                return transaccion
+            else:
+                connection = get_connection()
+                with connection:
+                    with connection.cursor() as cursor:
+                        cursor.execute(query, tuplaDeValores)
+                        return obj_password.id
 
-                    #cursor.execute(query, tuplaDeValores)
-                    #affectedRows = cursor.rowcount
-
-                    transaccion = (query, tuplaDeValores)
-
-            return transaccion
         except Exception as ex:
             raise Exception(ex)
 
@@ -47,35 +46,30 @@ class ModelPassword:
         except Exception as ex:
             raise Exception(ex)
 
-
     @classmethod
-    def update_password(cls, obj_password):
+    def update_password(cls, obj_password, return_query=True):
         try:
-            connection = get_connection()
-            with connection:
-                with connection.cursor() as cursor:
-                    claveNueva = Password.generate_key()
+            claveNueva = Password.generate_key()
 
-                    query = f'''UPDATE password SET password=PGP_SYM_ENCRYPT(%s,\'{claveNueva}\'), clave=%s  
-                                WHERE id=\'{obj_password.id}\''''
-                    tuplaDeValores = (obj_password.password, claveNueva)
-                    cursor.execute(query, tuplaDeValores)
-                    affectedRows = cursor.rowcount
+            query = f'''UPDATE password SET password=PGP_SYM_ENCRYPT(%s,\'{claveNueva}\'), clave=%s  
+                                            WHERE id=\'{obj_password.id}\''''
+            tuplaDeValores = (obj_password.password, claveNueva)
 
-            return affectedRows
+            if return_query:
+                transaccion = (query, tuplaDeValores)
+                return transaccion
+            else:
+                connection = get_connection()
+                with connection:
+                    with connection.cursor() as cursor:
+                        cursor.execute(query, tuplaDeValores)
+                        return obj_password.id
+
         except Exception as ex:
             raise Exception(ex)
 
 
 if __name__ == '__main__':
-    objPassword = Password('fwfwqfewfef', 'batata')
-    #ModelPassword.add_password(objPassword)
-
-    password = ModelPassword.get_password(objPassword.id)
-    print(password)
-
-    # objPassword.password = 'Manzana verde'
-    # ModelPassword.update_password(objPassword)
-
-    password = ModelPassword.get_password(objPassword.id)
+    id = 'dca03d96-8052-428a-8be9-0b41bc628cd5'
+    password = ModelPassword.get_password(id)
     print(password)

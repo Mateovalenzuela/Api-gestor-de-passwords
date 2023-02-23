@@ -1,11 +1,11 @@
 from src.database.db_postgresql import get_connection
 from src.models.entities.PasswordCompleto import PasswordCompleto
 from src.models.ModelPassword import ModelPassword
-from src.models.ModelDetallePassword import ModelDetallePassword
+from src.models.ModelDetalle import ModelDetalle
 from src.utils.IdGenerate import IdGenerate
 
 from src.models.entities.Password import Password
-from src.models.entities.DetallePassword import DetallePassword
+from src.models.entities.Detalle import Detalle
 
 
 class ModelPasswordCompleto:
@@ -16,36 +16,32 @@ class ModelPasswordCompleto:
             connection = get_connection()
             with connection:
                 with connection.cursor() as cursor:
+                    # generate id's
+                    idObjPasswordCompleto = IdGenerate.generate_id()
                     idObjPassword = IdGenerate.generate_id()
-                    idObjDetallePassword = IdGenerate.generate_id()
-
-                    obj_password_completo.id_password = idObjPassword
-                    obj_password_completo.id_detalle_password = idObjDetallePassword
+                    idObjDetalle = IdGenerate.generate_id()
 
                     # set id's in object's
-                    obj_password_completo.id = IdGenerate.generate_id()
+                    obj_password_completo.id = idObjPasswordCompleto
+                    obj_password_completo.password_id = idObjPassword
                     obj_password_completo.obj_password.id = idObjPassword
-                    obj_password_completo.obj_detalle_password.id = idObjDetallePassword
-
-                    # falta añadir los metodos add de los otros dos modelos
+                    obj_password_completo.detalle_id = idObjDetalle
+                    obj_password_completo.obj_detalle.id = idObjDetalle
 
                     transaccionAddPassword = ModelPassword.add_password(obj_password_completo.obj_password)
                     cursor.execute(transaccionAddPassword[0], transaccionAddPassword[1])
 
-                    transaccionAddDetallePassword = ModelDetallePassword.add_detalle_password(
-                        obj_password_completo.obj_detalle_password)
-                    cursor.execute(transaccionAddDetallePassword[0], transaccionAddDetallePassword[1])
+                    transaccionAddDetalle = ModelDetalle.add_detalle(obj_password_completo.obj_detalle_password)
+                    cursor.execute(transaccionAddDetalle[0], transaccionAddDetalle[1])
 
-                    query = f'''INSERT INTO \"conjunto-password-detalle\" (id, \"PASSWORD_ID\", \"DETALLE_PASSWORD_ID\", 
-                    baja)
+                    query = f'''INSERT INTO password_detalle (id, password_id, detalle_id, baja)
                                 VALUES (%s, %s, %s, %s)'''
-                    tuplaDeValores = (obj_password_completo.id, obj_password_completo.id_password,
-                                      obj_password_completo.id_detalle_password, obj_password_completo.baja)
+                    tuplaDeValores = (obj_password_completo.id, obj_password_completo.password_id,
+                                      obj_password_completo.detalle_id, obj_password_completo.baja)
 
                     cursor.execute(query, tuplaDeValores)
-                    affectedRows = cursor.rowcount
 
-            return affectedRows
+            return obj_password_completo.id
         except Exception as ex:
             raise Exception(ex)
 
@@ -55,20 +51,20 @@ class ModelPasswordCompleto:
             connection = get_connection()
             with connection:
                 with connection.cursor() as cursor:
-                    query = f'''SELECT \"PASSWORD_ID\", \"DETALLE_PASSWORD_ID\", \"fecha_creacion\" 
-                                FROM \"conjunto-password-detalle\" 
-                                WHERE id=\'{id}\''''
+                    query = f'''SELECT password_id, detalle_id, fecha_creacion
+                                FROM password_detalle 
+                                WHERE id=\'{id}\' and baja=False'''
                     cursor.execute(query)
-                    passwordCompleto = cursor.fetchone()
+                    objPasswordCompleto = cursor.fetchone()
 
-            idObjPassword = passwordCompleto[0]
-            idObjDetallePassword = passwordCompleto[1]
-            fechaCreacion = passwordCompleto[2]
+            idObjPassword = objPasswordCompleto[0]
+            idObjDetalle = objPasswordCompleto[1]
+            fechaCreacion = objPasswordCompleto[2]
 
             objPassword = ModelPassword.get_password(idObjPassword)
-            objDetallePassword = ModelDetallePassword.get_detalle_password(idObjDetallePassword)
+            objDetalle = ModelDetalle.get_detalle(idObjDetalle)
 
-            objPasswordCompleto = PasswordCompleto(id, objPassword, objDetallePassword)
+            objPasswordCompleto = PasswordCompleto(id, objPassword, objDetalle)
             objPasswordCompleto.fecha_creacion = fechaCreacion
             passwordCompleto = objPasswordCompleto.to_json()
 
@@ -83,24 +79,25 @@ class ModelPasswordCompleto:
             listaDePasswords = []
             with connection:
                 with connection.cursor() as cursor:
-                    query = f'''SELECT id, \"PASSWORD_ID\", \"DETALLE_PASSWORD_ID\", \"fecha_creacion\" 
-                                    FROM \"conjunto-password-detalle\" 
+                    query = f'''SELECT id, password_id, detalle_id, fecha_creacion
+                                    FROM password_detalle
                                     WHERE baja=False'''
                     cursor.execute(query)
                     all_passwords = cursor.fetchall()
 
-            for password in all_passwords:
-                idObjPassword = password[0]
-                idObjDetallePassword = password[1]
-                fechaCreacion = password[2]
+                for password in all_passwords:
+                    idObjPaswordCompleto = password[0]
+                    idObjPassword = password[1]
+                    idObjDetalle = password[2]
+                    fechaCreacion = password[3]
 
-                objPassword = ModelPassword.get_password(idObjPassword)
-                objDetallePassword = ModelDetallePassword.get_detalle_password(idObjDetallePassword)
+                    objPassword = ModelPassword.get_password(idObjPassword)
+                    objDetalle = ModelDetalle.get_detalle(idObjDetalle)
 
-                objPasswordCompleto = PasswordCompleto(id, objPassword, objDetallePassword)
-                objPasswordCompleto.fecha_creacion = fechaCreacion
-                passwordCompleto = objPasswordCompleto.to_json()
-                listaDePasswords.append(passwordCompleto)
+                    objPasswordCompleto = PasswordCompleto(idObjPaswordCompleto, objPassword, objDetalle)
+                    objPasswordCompleto.fecha_creacion = fechaCreacion
+                    passwordCompleto = objPasswordCompleto.to_json()
+                    listaDePasswords.append(passwordCompleto)
 
             return listaDePasswords
         except Exception as ex:
@@ -112,13 +109,13 @@ class ModelPasswordCompleto:
             connection = get_connection()
             with connection:
                 with connection.cursor() as cursor:
-                    query = f'''UPDATE \"conjunto-password-detalle\"
+                    query = f'''UPDATE password_detalle
                                 SET baja=True
                                 WHERE id=\'{id}\''''
                     cursor.execute(query)
                     row_afecteds = cursor.rowcount()
             if row_afecteds:
-                return row_afecteds
+                return id
             else:
                 return None
         except Exception as ex:
@@ -130,35 +127,26 @@ class ModelPasswordCompleto:
             connection = get_connection()
             with connection:
                 with connection.cursor() as cursor:
-                    # generar nuevos id's para obj password y obj detalle password
 
-                    transaccionPassword = ModelPassword.add_password(obj_password_completo.obj_password)
-                    cursor.execute(transaccionPassword[0], transaccionPassword[1])
+                    transaccionUpdatePassword = ModelPassword.update_password(obj_password_completo.obj_password)
+                    cursor.execute(transaccionUpdatePassword[0], transaccionUpdatePassword[1])
 
-                    transaccionDetallePassword = ModelDetallePassword.add_detalle_password(
-                        obj_password_completo.obj_detalle_password)
-                    cursor.execute(transaccionDetallePassword[0], transaccionDetallePassword[1])
+                    transaccionUpdateDetalle = ModelDetalle.update_detalle(obj_password_completo.obj_detalle_password)
+                    cursor.execute(transaccionUpdateDetalle[0], transaccionUpdateDetalle[1])
 
-                    query = f'''UPDATE \"conjunto-password-detalle\" 
-                                SET \'PASSWORD_ID\'=%s, \'DETALLE_PASSWORD_ID\'=%s 
-                                WHERE id=\'{obj_password_completo.id}\''''
-
-                    tuplaDeValores = (
-                    obj_password_completo.obj_password.id, obj_password_completo.obj_detalle_password.id)
-                    cursor.execute(query, tuplaDeValores)
-                    affectedRows = cursor.rowcount
-
-            return affectedRows
+            return obj_password_completo.id
         except Exception as ex:
             raise Exception(ex)
 
 
 if __name__ == '__main__':
-    objPassword = Password(None, 'gmail123')
-    objDetallePassword = DetallePassword(None, 'nateovalenzuela@gmail.com', 'gmail')
-    objPasswordCompleto = PasswordCompleto(None, objPassword, objDetallePassword)
 
-    # ModelPasswordCompleto.add_password_completo(objPasswordCompleto)
-    id = 'c3e855c9-1e84-4943-9c9d-27fc50ee8d38'
-    passwordCompleto = ModelPasswordCompleto.get_password_completo(id)
-    print(passwordCompleto)
+
+
+
+    # método get_all funciona
+    all_passwords = ModelPasswordCompleto.get_all_password_completo()
+    print(all_passwords)
+
+
+    
