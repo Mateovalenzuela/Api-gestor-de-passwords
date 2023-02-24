@@ -1,10 +1,12 @@
 from flask import Blueprint, jsonify, request
 
 # Models
-from models.ModelPassword import ModelPassword
+from src.models.ModelPasswordCompleto import ModelPasswordCompleto
 
 # Entities
-from models.entities.Password import Password
+from src.models.entities.Password import Password
+from src.models.entities.Detalle import Detalle
+from src.models.entities.PasswordCompleto import PasswordCompleto
 
 main = Blueprint('password_blueprint', __name__)
 
@@ -12,7 +14,7 @@ main = Blueprint('password_blueprint', __name__)
 @main.route('/')
 def get_passwords():
     try:
-        passwords = ModelPassword.get_passwords()
+        passwords = ModelPasswordCompleto.get_all_password_completo()
         return jsonify(passwords)
     except Exception as ex:
         return jsonify({'message': str(ex)}), 500
@@ -21,11 +23,14 @@ def get_passwords():
 @main.route('/<id>')
 def get_password(id):
     try:
-        password = ModelPassword.get_password(id)
-        if password is not None:
-            return jsonify(password)
+        if (len(id) == 36) and (type(id) == str):
+            password = ModelPasswordCompleto.get_password_completo(id)
+            if password is not None:
+                return jsonify(password)
+            else:
+                return jsonify({'message': "Error, password not found"}), 404
         else:
-            return jsonify({'message': "Error, password not found"}), 404
+            return jsonify({'message': "Error, id no valid"}), 404
     except Exception as ex:
         return jsonify({'message': str(ex)}), 500
 
@@ -33,18 +38,21 @@ def get_password(id):
 @main.route('/add', methods=['POST'])
 def add_password():
     try:
-        usuario = request.json['usuario']
-        password = request.json['password']
-        titulo = request.json['titulo']
-        url = request.json['url']
-        descripcion = request.json['descripcion']
-        objPassword = Password(None, usuario, password, titulo, url, descripcion)
+        objPassword = Password(None, request.json['password'])
+        objDetalle = Detalle(None, request.json['usuario'], request.json['titulo'], request.json['url'],
+                             request.json['descripcion'])
 
-        affectedRows = ModelPassword.add_password(objPassword)
-        if affectedRows:
-            return jsonify({'message': f'Added passwords: {affectedRows}'})
+        if objPassword.is_valid() and objDetalle.is_valid():
+            objPasswordCompleto = PasswordCompleto(None, objPassword, objDetalle)
+            idNewObj = ModelPasswordCompleto.add_password_completo(objPasswordCompleto)
+
+            if len(idNewObj) == 36:
+                return jsonify({'message': f'Added password: {idNewObj}'})
+            else:
+                return jsonify({'message': "Error on insert"}), 500
         else:
-            return jsonify({'message': "Error on insert"}), 500
+            return jsonify({'message': "Error, invalid data"}), 500
+
     except Exception as ex:
         return jsonify({'message': str(ex)}), 500
 
@@ -52,13 +60,14 @@ def add_password():
 @main.route('/delete/<id>', methods=['DELETE'])
 def delete_password(id):
     try:
-        objPassword = Password(id, None, None)
-        affectedRows = ModelPassword.delete_password(objPassword)
-
-        if affectedRows:
-            return jsonify({'message': f'Deleted passwords: {affectedRows}'})
+        if (len(id) == 36) and (type(id) == str):
+            idNewObj = ModelPasswordCompleto.delete_password_completo(id)
+            if idNewObj is not None:
+                return jsonify({'message': f'Deleted password: {idNewObj}'})
+            else:
+                return jsonify({'message': "No password deleted"}), 404
         else:
-            return jsonify({'message': "No password deleted"}), 404
+            return jsonify({'message': "Error, id no valid"}), 404
     except Exception as ex:
         return jsonify({'message': str(ex)}), 500
 
@@ -66,19 +75,24 @@ def delete_password(id):
 @main.route('/update/<id>', methods=['PUT'])
 def update_password(id):
     try:
-        usuario = request.json['usuario']
-        password = request.json['password']
-        titulo = request.json['titulo']
-        url = request.json['url']
-        descripcion = request.json['descripcion']
+        if (len(id) == 36) and (type(id) == str):
+            objPassword = Password(None, request.json['password'])
+            objDetalle = Detalle(None, request.json['usuario'], request.json['titulo'], request.json['url'],
+                                 request.json['descripcion'])
 
-        objPassword = Password(id, usuario, password, titulo, url, descripcion)
+            if objPassword.is_valid() and objDetalle.is_valid():
+                objPasswordCompleto = PasswordCompleto(id, objPassword, objDetalle)
+                idNewObj = ModelPasswordCompleto.update_password_completo(objPasswordCompleto)
 
-        affectedRows = ModelPassword.update_password(objPassword)
-        if affectedRows:
-            return jsonify({'message': f'Updated passwords: {affectedRows}'})
+                if len(idNewObj) == 36:
+                    return jsonify({'message': f'Updated passwords: {idNewObj}'})
+                else:
+                    return jsonify({'message': "No password updated"}), 404
+            else:
+                return jsonify({'message': "Error, invalid data"}), 404
+
         else:
-            return jsonify({'message': "No password updated"}), 404
+            return jsonify({'message': "Error, id no valid"}), 404
     except Exception as ex:
         return jsonify({'message': str(ex)}), 500
 

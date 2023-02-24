@@ -55,3 +55,34 @@ class Detalle:
     @descripcion.setter
     def descripcion(self, descripcion):
         self._descripcion = descripcion
+
+    def is_valid(self):
+        titulo = self.titulo
+        usuario = self.usuario
+        url = self.url
+        descripcion = self.descripcion
+
+        if (len(titulo) <= 20) and (type(titulo) == str):
+            tituloValido = True
+        else:
+            tituloValido = False
+
+        if (len(usuario) <= 50) and (type(usuario) == str):
+            usuarioValido = True
+        else:
+            usuarioValido = False
+
+        if (len(url) <= 250) and (type(url) == str):
+            urlValido = True
+        else:
+            urlValido = False
+
+        if (len(descripcion) <= 100) and (type(descripcion) == str):
+            descripcionValido = True
+        else:
+            descripcionValido = False
+
+        if tituloValido and usuarioValido and urlValido and descripcionValido:
+            return True
+        else:
+            return False

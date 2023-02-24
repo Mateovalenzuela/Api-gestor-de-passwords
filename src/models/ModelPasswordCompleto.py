@@ -1,3 +1,5 @@
+import uuid
+
 from src.database.db_postgresql import get_connection
 from src.models.entities.PasswordCompleto import PasswordCompleto
 from src.models.ModelPassword import ModelPassword
@@ -31,7 +33,7 @@ class ModelPasswordCompleto:
                     transaccionAddPassword = ModelPassword.add_password(obj_password_completo.obj_password)
                     cursor.execute(transaccionAddPassword[0], transaccionAddPassword[1])
 
-                    transaccionAddDetalle = ModelDetalle.add_detalle(obj_password_completo.obj_detalle_password)
+                    transaccionAddDetalle = ModelDetalle.add_detalle(obj_password_completo.obj_detalle)
                     cursor.execute(transaccionAddDetalle[0], transaccionAddDetalle[1])
 
                     query = f'''INSERT INTO password_detalle (id, password_id, detalle_id, baja)
@@ -127,11 +129,18 @@ class ModelPasswordCompleto:
             connection = get_connection()
             with connection:
                 with connection.cursor() as cursor:
+                    query = f'''SELECT password_id, detalle_id FROM password_detalle
+                                WHERE id=\'{obj_password_completo.id}\''''
+                    cursor.execute(query)
+                    resulset = cursor.fetchone()
+
+                    obj_password_completo.obj_password.id = resulset[0]
+                    obj_password_completo.obj_detalle.id = resulset[1]
 
                     transaccionUpdatePassword = ModelPassword.update_password(obj_password_completo.obj_password)
                     cursor.execute(transaccionUpdatePassword[0], transaccionUpdatePassword[1])
 
-                    transaccionUpdateDetalle = ModelDetalle.update_detalle(obj_password_completo.obj_detalle_password)
+                    transaccionUpdateDetalle = ModelDetalle.update_detalle(obj_password_completo.obj_detalle)
                     cursor.execute(transaccionUpdateDetalle[0], transaccionUpdateDetalle[1])
 
             return obj_password_completo.id
@@ -141,12 +150,27 @@ class ModelPasswordCompleto:
 
 if __name__ == '__main__':
 
+    id = str(uuid.uuid4())
+    print(len(id))
+    idObjPassword = '4de53f0a-7be0-41bb-9d2a-6f58978705d7'
+
+    objPassword = Password(None, 'ZANAORIA10')
+    objDetalle = Detalle(None, 'mateovalenzuela773@gmail.com', 'gmail')
+    #objPasswordCompleto = PasswordCompleto(idObjPassword, objPassword, objDetalle)
 
 
+    # idNewObj = ModelPasswordCompleto.update_password_completo(objPasswordCompleto)
+
+
+
+
+    #get one
+    #newPassword = ModelPasswordCompleto.get_password_completo(idNewObj)
+    #print(newPassword)
 
     # método get_all funciona
-    all_passwords = ModelPasswordCompleto.get_all_password_completo()
-    print(all_passwords)
+    # all_passwords = ModelPasswordCompleto.get_all_password_completo()
+    # print(all_passwords)
 
 
     

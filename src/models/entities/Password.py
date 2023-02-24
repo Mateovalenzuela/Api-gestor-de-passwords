@@ -40,3 +40,10 @@ class Password:
     @clave.setter
     def clave(self, clave):
         self._clave = clave
+
+    def is_valid(self):
+        password = self.password
+        if (len(password) <= 36) and (type(password) == str):
+            return True
+        else:
+            return False
