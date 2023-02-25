@@ -13,7 +13,6 @@ class Password:
 
     def to_json(self):
         return {
-            'id': self.id,
             'password': self.password,
         }
 

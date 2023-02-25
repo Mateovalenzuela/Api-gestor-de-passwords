@@ -115,7 +115,7 @@ class ModelPasswordCompleto:
                                 SET baja=True
                                 WHERE id=\'{id}\''''
                     cursor.execute(query)
-                    row_afecteds = cursor.rowcount()
+                    row_afecteds = cursor.rowcount
             if row_afecteds:
                 return id
             else:
@@ -150,12 +150,12 @@ class ModelPasswordCompleto:
 
 if __name__ == '__main__':
 
-    id = str(uuid.uuid4())
-    print(len(id))
-    idObjPassword = '4de53f0a-7be0-41bb-9d2a-6f58978705d7'
+    id = ModelPasswordCompleto.delete_password_completo('46c7079c-d024-42fa-9bb8-391a929030f9')
+    print(id)
+    #idObjPassword = '4de53f0a-7be0-41bb-9d2a-6f58978705d7'
 
-    objPassword = Password(None, 'ZANAORIA10')
-    objDetalle = Detalle(None, 'mateovalenzuela773@gmail.com', 'gmail')
+    #objPassword = Password(None, 'ZANAORIA10')
+    #objDetalle = Detalle(None, 'mateovalenzuela773@gmail.com', 'gmail')
     #objPasswordCompleto = PasswordCompleto(idObjPassword, objPassword, objDetalle)
 
 

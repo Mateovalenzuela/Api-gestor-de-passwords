@@ -9,7 +9,6 @@ class Detalle:
 
     def to_json(self):
         return {
-            'id': self.id,
             'titulo': self.titulo,
             'usuario': self.usuario,
             'url': self.url,
