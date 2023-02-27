@@ -37,8 +37,7 @@ class ModelDetalle:
 
             objDetalle = Detalle(id, detalle[0], detalle[1], detalle[2],
                                  detalle[3])
-            detalle = objDetalle.to_json()
-            return detalle
+            return objDetalle
         except Exception as ex:
             raise Exception(ex)
 

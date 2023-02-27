@@ -41,8 +41,7 @@ class ModelPassword:
                     password = cursor.fetchone()[0]
 
             objPassword = Password(id, password)
-            password = objPassword.to_json()
-            return password
+            return objPassword
         except Exception as ex:
             raise Exception(ex)
 

@@ -14,8 +14,11 @@ class PasswordCompleto:
     def to_json(self):
         return {
             'id': self.id,
-            'obj_password': self.obj_password,
-            'obj_detalle': self.obj_detalle,
+            'password': self.obj_password.password,
+            'titulo': self.obj_detalle.titulo,
+            'usuario': self.obj_detalle.usuario,
+            'url': self.obj_detalle.url,
+            'descripcion': self.obj_detalle.descripcion,
             'fecha_creacion': DateFormat.convert_date(self.fecha_creacion),
         }
 
