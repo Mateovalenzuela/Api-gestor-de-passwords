@@ -56,18 +56,21 @@ class ModelPasswordCompleto:
                     query = f'''SELECT password_id, detalle_id, fecha_creacion
                                 FROM password_detalle 
                                 WHERE id=\'{id}\' and baja=False'''
+
+                    query = f'''select password_detalle.id,  detalle.usuario, detalle.titulo, detalle.url, 
+                                    detalle.descripcion, password_detalle.fecha_creacion, password_detalle.password_id,
+                                    password_detalle.detalle_id
+                                from password_detalle inner join detalle
+                                on password_detalle.detalle_id = detalle.id
+                                where password_detalle.baja = false and password_detalle.id = \'{id}\';'''
                     cursor.execute(query)
-                    objPasswordCompleto = cursor.fetchone()
+                    resulset = cursor.fetchone()
 
-            idObjPassword = objPasswordCompleto[0]
-            idObjDetalle = objPasswordCompleto[1]
-            fechaCreacion = objPasswordCompleto[2]
+            objDetalle = Detalle(resulset[7], resulset[1], resulset[2], resulset[3], resulset[4])
+            objPassword = ModelPassword.get_password(resulset[6])
+            objPasswordCompleto = PasswordCompleto(resulset[0], objPassword, objDetalle)
+            objPasswordCompleto.fecha_creacion = resulset[5]
 
-            objPassword = ModelPassword.get_password(idObjPassword)
-            objDetalle = ModelDetalle.get_detalle(idObjDetalle)
-
-            objPasswordCompleto = PasswordCompleto(id, objPassword, objDetalle)
-            objPasswordCompleto.fecha_creacion = fechaCreacion
             passwordCompleto = objPasswordCompleto.to_json()
 
             return passwordCompleto
@@ -81,23 +84,23 @@ class ModelPasswordCompleto:
             listaDePasswords = []
             with connection:
                 with connection.cursor() as cursor:
-                    query = f'''SELECT id, password_id, detalle_id, fecha_creacion
-                                    FROM password_detalle
-                                    WHERE baja=False'''
+
+                    query = '''select password_detalle.id, detalle.usuario, detalle.titulo, detalle.url, 
+                                    detalle.descripcion, password_detalle.fecha_creacion, password_detalle.password_id,
+                                    password_detalle.detalle_id
+                                from password_detalle inner join detalle
+                                on password_detalle.detalle_id = detalle.id
+                                where password_detalle.baja = false;'''
+
                     cursor.execute(query)
                     all_passwords = cursor.fetchall()
 
-                for password in all_passwords:
-                    idObjPaswordCompleto = password[0]
-                    idObjPassword = password[1]
-                    idObjDetalle = password[2]
-                    fechaCreacion = password[3]
+                for resulset in all_passwords:
+                    objDetalle = Detalle(resulset[7], resulset[1], resulset[2], resulset[3], resulset[4])
+                    objPassword = ModelPassword.get_password(resulset[6])
+                    objPasswordCompleto = PasswordCompleto(resulset[0], objPassword, objDetalle)
+                    objPasswordCompleto.fecha_creacion = resulset[5]
 
-                    objPassword = ModelPassword.get_password(idObjPassword)
-                    objDetalle = ModelDetalle.get_detalle(idObjDetalle)
-
-                    objPasswordCompleto = PasswordCompleto(idObjPaswordCompleto, objPassword, objDetalle)
-                    objPasswordCompleto.fecha_creacion = fechaCreacion
                     passwordCompleto = objPasswordCompleto.to_json()
                     listaDePasswords.append(passwordCompleto)
 
@@ -149,9 +152,10 @@ class ModelPasswordCompleto:
 
 
 if __name__ == '__main__':
-
-    id = ModelPasswordCompleto.delete_password_completo('46c7079c-d024-42fa-9bb8-391a929030f9')
-    print(id)
+    id = 'c3e855c9-1e84-4943-9c9d-27fc50ee8d38'
+    lista = ModelPasswordCompleto.get_password_completo(id)
+    #id = ModelPasswordCompleto.delete_password_completo('46c7079c-d024-42fa-9bb8-391a929030f9')
+    print(lista)
     #idObjPassword = '4de53f0a-7be0-41bb-9d2a-6f58978705d7'
 
     #objPassword = Password(None, 'ZANAORIA10')
