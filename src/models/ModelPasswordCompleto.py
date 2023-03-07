@@ -53,23 +53,23 @@ class ModelPasswordCompleto:
             connection = get_connection()
             with connection:
                 with connection.cursor() as cursor:
-                    query = f'''SELECT password_id, detalle_id, fecha_creacion
-                                FROM password_detalle 
-                                WHERE id=\'{id}\' and baja=False'''
 
-                    query = f'''select password_detalle.id,  detalle.usuario, detalle.titulo, detalle.url, 
-                                    detalle.descripcion, password_detalle.fecha_creacion, password_detalle.password_id,
-                                    password_detalle.detalle_id
-                                from password_detalle inner join detalle
-                                on password_detalle.detalle_id = detalle.id
-                                where password_detalle.baja = false and password_detalle.id = \'{id}\';'''
+                    query = f'''SELECT password_detalle.id, detalle.usuario, detalle.titulo, detalle.url, 
+                    detalle.descripcion, pgp_sym_decrypt(password.password::bytea, (password.clave)) AS password, 
+                    password_detalle.fecha_creacion
+                                FROM password_detalle
+                                INNER JOIN detalle
+                                ON password_detalle.detalle_id = detalle.id
+                                INNER JOIN password
+                                ON password_detalle.password_id = password.id
+                                WHERE password_detalle.baja = false AND password_detalle.id = \'{id}\';'''
                     cursor.execute(query)
                     resulset = cursor.fetchone()
 
-            objDetalle = Detalle(resulset[7], resulset[1], resulset[2], resulset[3], resulset[4])
-            objPassword = ModelPassword.get_password(resulset[6])
+            objDetalle = Detalle(None, resulset[1], resulset[2], resulset[3], resulset[4])
+            objPassword = Password(None, resulset[5])
             objPasswordCompleto = PasswordCompleto(resulset[0], objPassword, objDetalle)
-            objPasswordCompleto.fecha_creacion = resulset[5]
+            objPasswordCompleto.fecha_creacion = resulset[6]
 
             passwordCompleto = objPasswordCompleto.to_json()
 
@@ -85,21 +85,24 @@ class ModelPasswordCompleto:
             with connection:
                 with connection.cursor() as cursor:
 
-                    query = '''select password_detalle.id, detalle.usuario, detalle.titulo, detalle.url, 
-                                    detalle.descripcion, password_detalle.fecha_creacion, password_detalle.password_id,
-                                    password_detalle.detalle_id
-                                from password_detalle inner join detalle
-                                on password_detalle.detalle_id = detalle.id
-                                where password_detalle.baja = false;'''
+                    query = '''SELECT password_detalle.id, detalle.usuario, detalle.titulo, detalle.url, 
+                    detalle.descripcion, pgp_sym_decrypt(password.password::bytea, (password.clave)) AS password, 
+                    password_detalle.fecha_creacion
+                                FROM password_detalle
+                                INNER JOIN detalle
+                                ON password_detalle.detalle_id = detalle.id
+                                INNER JOIN password
+                                ON password_detalle.password_id = password.id
+                                WHERE password_detalle.baja = false;'''
 
                     cursor.execute(query)
                     all_passwords = cursor.fetchall()
 
                 for resulset in all_passwords:
-                    objDetalle = Detalle(resulset[7], resulset[1], resulset[2], resulset[3], resulset[4])
-                    objPassword = ModelPassword.get_password(resulset[6])
+                    objDetalle = Detalle(None, resulset[1], resulset[2], resulset[3], resulset[4])
+                    objPassword = Password(None, resulset[5])
                     objPasswordCompleto = PasswordCompleto(resulset[0], objPassword, objDetalle)
-                    objPasswordCompleto.fecha_creacion = resulset[5]
+                    objPasswordCompleto.fecha_creacion = resulset[6]
 
                     passwordCompleto = objPasswordCompleto.to_json()
                     listaDePasswords.append(passwordCompleto)
@@ -153,7 +156,7 @@ class ModelPasswordCompleto:
 
 if __name__ == '__main__':
     id = 'c3e855c9-1e84-4943-9c9d-27fc50ee8d38'
-    lista = ModelPasswordCompleto.get_password_completo(id)
+    lista = ModelPasswordCompleto.get_all_password_completo()
     #id = ModelPasswordCompleto.delete_password_completo('46c7079c-d024-42fa-9bb8-391a929030f9')
     print(lista)
     #idObjPassword = '4de53f0a-7be0-41bb-9d2a-6f58978705d7'

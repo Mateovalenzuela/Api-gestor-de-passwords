@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="024fc12f-101e-453d-8682-c09844807bf6" name="Changes" comment="Actualización diaria">
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23_2_2023_00_12_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23_2_2023_00_12__Changes_.xml" beforeDir="false" />
+    <list default="true" id="024fc12f-101e-453d-8682-c09844807bf6" name="Changes" comment="Optimización de GET">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/models/ModelPasswordCompleto.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/ModelPasswordCompleto.py" afterDir="false" />
     </list>
@@ -216,7 +214,8 @@
       <workItem from="1677916042158" duration="621000" />
       <workItem from="1677985218620" duration="657000" />
       <workItem from="1677992124395" duration="622000" />
-      <workItem from="1678163517580" duration="2407000" />
+      <workItem from="1678163517580" duration="2461000" />
+      <workItem from="1678170323404" duration="520000" />
     </task>
     <task id="LOCAL-00001" summary="addeded Docker">
       <created>1676440828083</created>
@@ -260,7 +259,14 @@
       <option name="project" value="LOCAL" />
       <updated>1677474362580</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Optimización de GET">
+      <created>1678165996382</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1678165996382</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -274,7 +280,8 @@
     <MESSAGE value="actualización diaria" />
     <MESSAGE value="Api funcional" />
     <MESSAGE value="Actualización diaria" />
-    <option name="LAST_COMMIT_MESSAGE" value="Actualización diaria" />
+    <MESSAGE value="Optimización de GET" />
+    <option name="LAST_COMMIT_MESSAGE" value="Optimización de GET" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -293,9 +300,9 @@
     </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Api_flask_passwords$ModelPasswordCompleto.coverage" NAME="ModelPasswordCompleto Coverage Results" MODIFIED="1678165699355" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/models" />
+    <SUITE FILE_PATH="coverage/Api_flask_passwords$ModelPasswordCompleto.coverage" NAME="ModelPasswordCompleto Coverage Results" MODIFIED="1678170812160" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/models" />
     <SUITE FILE_PATH="coverage/Api_flask_passwords$PasswordEncriptado.coverage" NAME="PasswordEncriptado Coverage Results" MODIFIED="1676516456773" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/models/entities" />
-    <SUITE FILE_PATH="coverage/Api_flask_passwords$app.coverage" NAME="app Coverage Results" MODIFIED="1678165721722" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/Api_flask_passwords$app.coverage" NAME="app Coverage Results" MODIFIED="1678170820872" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/Api_flask_passwords$ModelDetalle__1_.coverage" NAME="ModelDetalle (1) Coverage Results" MODIFIED="1677130846408" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/models" />
     <SUITE FILE_PATH="coverage/Api_flask_passwords$PasswordRoutes.coverage" NAME="PasswordRoutes Coverage Results" MODIFIED="1677296176266" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/routes" />
     <SUITE FILE_PATH="coverage/Api_flask_passwords$ModelDetallePassword.coverage" NAME="ModelDetallePassword Coverage Results" MODIFIED="1676784378007" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/models" />
