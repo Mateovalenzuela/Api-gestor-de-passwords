@@ -1,5 +1,5 @@
-from src.database.db_postgresql import get_connection
-from src.models.entities.Detalle import Detalle
+from database.db_postgresql import get_connection
+from models.entities.Detalle import Detalle
 
 
 class ModelDetalle:

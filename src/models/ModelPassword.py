@@ -1,5 +1,5 @@
-from src.database.db_postgresql import get_connection
-from src.models.entities.Password import Password
+from database.db_postgresql import get_connection
+from models.entities.Password import Password
 
 
 class ModelPassword:
@@ -9,8 +9,8 @@ class ModelPassword:
         try:
             obj_password.clave = Password.generate_key()
             query = f'''INSERT INTO password (id, password, clave)
-                                            VALUES (%s, PGP_SYM_ENCRYPT(%s, \'{obj_password.clave}\'), %s)'''
-            tuplaDeValores = (obj_password.id, obj_password.password, obj_password.clave)
+                                            VALUES (%s, PGP_SYM_ENCRYPT(%s, %s), %s);'''
+            tuplaDeValores = (obj_password.id, obj_password.password, obj_password.clave, obj_password.clave)
 
             if return_query:
                 transaccion = (query, tuplaDeValores)

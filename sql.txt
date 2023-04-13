@@ -1,9 +1,14 @@
+
+-- PASO 1
+
 -- Extension: se utiliza para encriptar los passwords
 
 CREATE EXTENSION pgcrypto
 
 
 
+
+-- PASO 2
 
 -- Database: test_gestor_de_passwords
 
@@ -19,26 +24,98 @@ CREATE DATABASE test_gestor_de_passwords
 
 
 
-
--- Table: public.gestor_password
-
--- DROP TABLE IF EXISTS public.gestor_password;
+-- PASO 3 RECARGAR PGADMIN Y CONECTAR AL LA BD
 
 
-CREATE TABLE IF NOT EXISTS public.gestor_password
+
+-- PASO 4
+
+
+-- Table: public.password
+
+-- DROP TABLE IF EXISTS public.password;
+
+CREATE TABLE IF NOT EXISTS public.password
 (
-    id serial NOT NULL,
-    usuario character varying(70) COLLATE pg_catalog."default" NOT NULL,
-    password text COLLATE pg_catalog."default" NOT NULL,
-    url character varying(200) COLLATE pg_catalog."default" DEFAULT NULL::character varying,
-    descripcion character varying(250) COLLATE pg_catalog."default" DEFAULT NULL::character varying,
-    baja boolean NOT NULL,
-    fecha_creacion timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    titulo character varying(50) COLLATE pg_catalog."default" DEFAULT NULL::character varying,
-    CONSTRAINT "Password_pkey" PRIMARY KEY (id)
+    id character varying(36) COLLATE pg_catalog."default" NOT NULL,
+    password character varying COLLATE pg_catalog."default" NOT NULL,
+    clave character varying(36) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT password_pkey PRIMARY KEY (id)
 )
 
 TABLESPACE pg_default;
 
-ALTER TABLE IF EXISTS public.gestor_password
+ALTER TABLE IF EXISTS public.password
     OWNER to postgres;
+
+
+-- Table: public.detalle
+
+-- DROP TABLE IF EXISTS public.detalle;
+
+CREATE TABLE IF NOT EXISTS public.detalle
+(
+    id character varying(36) COLLATE pg_catalog."default" NOT NULL,
+    titulo character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    usuario character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    url character varying(250) COLLATE pg_catalog."default" NOT NULL,
+    descripcion character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT detalle_pkey PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.detalle
+    OWNER to postgres;
+
+
+
+-- Table: public.password_detalle
+
+-- DROP TABLE IF EXISTS public.password_detalle;
+
+CREATE TABLE IF NOT EXISTS public.password_detalle
+(
+    id character varying(36) COLLATE pg_catalog."default" NOT NULL,
+    password_id character varying(36) COLLATE pg_catalog."default" NOT NULL,
+    detalle_id character varying(36) COLLATE pg_catalog."default" NOT NULL,
+    fecha_creacion timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    baja boolean NOT NULL,
+    CONSTRAINT password_detalle_pkey PRIMARY KEY (id),
+    CONSTRAINT detalle_fkey FOREIGN KEY (detalle_id)
+        REFERENCES public.detalle (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT password_fkey FOREIGN KEY (password_id)
+        REFERENCES public.password (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.password_detalle
+    OWNER to postgres;
+-- Index: fki_P
+
+-- DROP INDEX IF EXISTS public."fki_P";
+
+CREATE INDEX IF NOT EXISTS "fki_P"
+    ON public.password_detalle USING btree
+    (detalle_id COLLATE pg_catalog."default" ASC NULLS LAST)
+    TABLESPACE pg_default;
+-- Index: fki_PASSWORD_FK
+
+-- DROP INDEX IF EXISTS public."fki_PASSWORD_FK";
+
+CREATE INDEX IF NOT EXISTS "fki_PASSWORD_FK"
+    ON public.password_detalle USING btree
+    (password_id COLLATE pg_catalog."default" ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+
+
+
+

@@ -1,13 +1,13 @@
 import uuid
 
-from src.database.db_postgresql import get_connection
-from src.models.entities.PasswordCompleto import PasswordCompleto
-from src.models.ModelPassword import ModelPassword
-from src.models.ModelDetalle import ModelDetalle
-from src.utils.IdGenerate import IdGenerate
+from database.db_postgresql import get_connection
+from models.entities.PasswordCompleto import PasswordCompleto
+from models.ModelPassword import ModelPassword
+from models.ModelDetalle import ModelDetalle
+from utils.IdGenerate import IdGenerate
 
-from src.models.entities.Password import Password
-from src.models.entities.Detalle import Detalle
+from models.entities.Password import Password
+from models.entities.Detalle import Detalle
 
 
 class ModelPasswordCompleto:
@@ -55,7 +55,7 @@ class ModelPasswordCompleto:
                 with connection.cursor() as cursor:
 
                     query = f'''SELECT password_detalle.id, detalle.usuario, detalle.titulo, detalle.url, 
-                    detalle.descripcion, pgp_sym_decrypt(password.password::bytea, (password.clave)) AS password, 
+                    detalle.descripcion, PGP_SYM_DECRYPT(password.password::bytea, (password.clave)) AS password, 
                     password_detalle.fecha_creacion
                                 FROM password_detalle
                                 INNER JOIN detalle
@@ -86,7 +86,7 @@ class ModelPasswordCompleto:
                 with connection.cursor() as cursor:
 
                     query = '''SELECT password_detalle.id, detalle.usuario, detalle.titulo, detalle.url, 
-                    detalle.descripcion, pgp_sym_decrypt(password.password::bytea, (password.clave)) AS password, 
+                    detalle.descripcion, PGP_SYM_DECRYPT(password.password::bytea, (password.clave)) AS password, 
                     password_detalle.fecha_creacion
                                 FROM password_detalle
                                 INNER JOIN detalle
